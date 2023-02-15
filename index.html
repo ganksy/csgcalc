@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSG Calculator</title>
+</head>
+
+<style>
+  body {
+    font-family: sans-serif;
+  }
+
+  form {
+    max-width: 550px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+
+  form h1 {
+    margin: 0 0 20px 0;
+    padding: 0;
+    text-align: center;
+  }
+
+  form label {
+    display: block;
+    margin: 10px 0 10px 0;
+  }
+
+  form #daysDelay {
+    width: 96%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+
+  form input[type=checkbox] {
+    width: auto;
+  }
+
+  form button {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #00aaff;
+    color: white;
+    cursor: pointer;
+  }
+
+  form .result {
+    margin: 20px 0 0 0;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #eee;
+    text-align: center;
+  }
+
+  .rad {
+    display: flex;
+    flex-direction: row;
+  }
+
+  .Dates {
+    display: flex;
+    flex-direction: row;
+
+  }
+  #ddate {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 80%
+  }
+
+  #states {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 100%;
+  }
+
+  #delayType {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 100%;
+  }
+
+  #menu2 {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 73%;
+  }
+
+  .delays {
+    display: flex;
+    flex-direction: row;
+  }
+
+  #noOfLines {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 100%;
+  }
+
+  .labeling {
+    display: flex;
+    flex-direction: column;
+  }
+
+</style>
+
+
+<form>
+  <h1>CSG Calculator</h1>
+  <div class = "Dates">
+    <label>
+      Start Date:
+      <input type="date" id ="ddate" name = "startDate" placeholder = "YYYY-MM-DD">
+    </label>
+    <label>
+      End Date:
+      <input type="date" id = "ddate" name = "endDate" placeholder = "YYYY-MM-DD">
+    </label>
+    <label for="states">Select a State:
+    <select id="states" name="states">
+      <option value="ACT">Australian Capital Territory</option>
+      <option value="NSW">New South Wales</option>
+      <option value="NT">Northern Territory</option>
+      <option value="QLD">Queensland</option>
+      <option value="SA">South Australia</option>
+      <option value="TAS">Tasmania</option>
+      <option value="VIC">Victoria</option>
+      <option value="WA">Western Australia</option>
+    </select>
+  </label>
+  </div>
+
+  <div class = "delays">
+    <div class = "labeling">
+        <label for="delayType">Delay In:</label>
+        <select id="delayType">
+            <option>Connecting a Standard Telephone Service</option>
+            <option>Repairing a Standard Telephone Service</option>
+            <option>Connecting an Enhanced Call Handling Feature</option>
+            <option>Repairing an Enhanced Call Handling Feature</option>
+            <option>Missed Appointment</option>
+        </select>
+    </div>
+  
+    <div class = "labeling" Style = 'margin-left: 4%;'>
+        <label for="noOfLines">Number of Lines: </label>
+        <select id="noOfLines" name="noOfLines">
+            <option> 1 </option>
+            <option> 2 </option>
+            <option> 3 </option>
+            <option> 4 </option>
+            <option> 5+ </option>
+        </select>
+    </div>    
+  </div>  
+
+    <div id="menu2-container" style="display: none;">
+        <label for="menu2">Number of Call Handling Feature:</label>
+        <select id="menu2">
+          <option>1 Enhanced Call Handling Feature</option>
+          <option>2 or more Enhanced Call Handling Feature</option>
+        </select>
+      </div>  
+  
+
+  <!-- <label>
+    Days Delay:
+    <input type="text" name = "daysDelay" id = "daysDelay" placeholder = "Enter number of days delay">
+  </label> -->
+  <div class = "rad">
+  <input type='radio' checked = 'checked' id='residential' name='consumer' value='residential'>
+  <label for='residential'> Residential or Charity Consumer</label>
+  </div>
+  <div class = "rad">
+  <input type='radio' id='business' name='consumer' value='business'>
+  <label for='business'> Business Consumer</label>
+  </div>
+  <label>
+    Mass Disruption:
+    <input type="checkbox" name="massDisruption">
+  </label>
+  <button type="button" onclick="calculate()">Calculate</button>
+  <div class="result"></div>
+</form>
+
+
+<script>
+// CSG calculator
+
+  // get the first menu and the container for the second menu
+  const menu1 = document.getElementById('delayType');
+  const menu2Container = document.getElementById('menu2-container');
+
+  // add an event listener to the first menu
+  menu1.addEventListener('change', function() {
+    // if the second option is selected in the first menu,
+    // show the container for the second menu
+    if (menu1.value === 'Connecting an Enhanced Call Handling Feature' || menu1.value === 'Repairing an Enhanced Call Handling Feature') {
+      menu2Container.style.display = 'block';
+    }
+    // if the second option is not selected in the first menu,
+    // hide the container for the second menu
+    else {
+      menu2Container.style.display = 'none';
+    }
+  });
+
+function calculate() {
+
+  let massDisruptionInput = document.querySelector("input[name=massDisruption]");
+  let massDisruption = massDisruptionInput.checked;
+
+  let consumerTypeInput = document.querySelector("input[name=consumer]:checked");
+  let consumerType = consumerTypeInput.value;
+
+  let startDateInput = document.querySelector("input[name=startDate]");
+  let startDate = startDateInput.value;
+
+  let endDateInput = document.querySelector("input[name=endDate]");
+  let endDate = endDateInput.value;
+
+  let states = document.getElementById("states");
+  let selectedState = states.value;
+
+  const options = {
+	method: 'GET',
+	headers: {
+		'X-RapidAPI-Key': 'ffbf647742msh67bbd0e287e1499p1b5084jsn9e8ad56a2189',
+		'X-RapidAPI-Host': 'working-days.p.rapidapi.com'
+	}
+  };
+  
+  fetch(`https://working-days.p.rapidapi.com/1.3/analyse?start_date=${startDate}&end_date=${endDate}&country_code=AU&configuration=AU-${selectedState}`, options)
+  .then(response => response.json())
+  .then(response => {console.log(response); // add this line to log the response object
+    let workDays = response.working_days.total
+    let csg = calculateCSG(workDays, consumerType);
+    let resultDiv = document.querySelector(".result");
+    resultDiv.innerHTML = "";
+    if (csg > 0) {
+      // If CSG compensation is payable, show the amount
+      resultDiv.innerHTML = "CSG compensation: $" + csg;
+    } else {
+      // If CSG compensation is not payable, show a message
+      resultDiv.innerHTML = "No CSG compensation payable" + workDays;
+    }
+  })
+  .catch(err => console.error(err));
+}
+
+function numberOfDelayDays (workDays) {
+    
+}
+
+function calculateCSG(daysDelay, consumerType) {
+  // Calculate CSG compensation
+  let csg = 0;
+  const residentialRate = 14.52
+  const businessRate = 24.2
+  const rateAfter5 = 48.4
+
+  if (consumerType === "residential" && daysDelay <= 5) {
+    csg += daysDelay * residentialRate
+  }
+  else if (consumerType === "business" && daysDelay <= 5){
+    csg += daysDelay * businessRate
+  }
+  else if (consumerType === "residential" && daysDelay > 5) {
+    csg += (5 * residentialRate) + ((daysDelay - 5) * rateAfter5);
+  }
+  else if (consumerType === "business" && daysDelay > 5) {
+    csg += (5 * businessRate) + ((daysDelay - 5) * rateAfter5);
+  }
+
+  return csg.toFixed(2);
+}
+</script>
