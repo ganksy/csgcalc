@@ -1,2 +1,3 @@
-# csgcalc
-csg calculator
+CSG CALCULATOR
+
+Calculates CSG
